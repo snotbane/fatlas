@@ -8,6 +8,7 @@ class MegaImageClip:
 	var folder_name : String
 	var image : Image
 	var region : Rect2i
+	var offset : Vector2i
 
 	var path : String :
 		get: return folder_name + name + ".tres"
@@ -19,13 +20,15 @@ class MegaImageClip:
 		name = name.substr(0, name.rfind("."))
 		image = texture.get_image()
 		region = image.get_used_rect()
+		offset = image.get_used_rect().position
 
 		if image.get_format() != mega.image.get_format():
 			image.convert(mega.image.get_format())
 
 
-	func create_atlas(texture: Texture2D) -> AtlasTexture:
-		var result := AtlasTexture.new()
+	func create_atlas(texture: Texture2D) -> OffsetAtlasTexture:
+		var result := OffsetAtlasTexture.new()
+		result.offset = offset
 		result.atlas = texture
 		result.region = region
 		return result
@@ -74,7 +77,6 @@ class MegaImage :
 
 		if not full_rect.encloses(rect):
 			size = full_rect.merge(rect).size
-		print("Placing new image at ", rect)
 
 		image.blit_rect(clip.image, used, rect.position)
 		clip.region.position = rect.position
