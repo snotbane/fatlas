@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-const MAIN_PANEL_SCENE : PackedScene = preload("res://addons/atlasser/assets/scenes/atlas_main_screen.tscn")
+const MAIN_PANEL_SCENE : PackedScene = preload("res://addons/penny_atlas_godot/assets/scenes/atlas_main_screen.tscn")
 
 var main_panel : Control
 
