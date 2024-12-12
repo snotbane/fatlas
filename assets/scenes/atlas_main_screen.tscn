@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cbfiqd0q006mi"]
 
-[ext_resource type="Script" path="res://addons/penny_atlas/assets/scripts/atlas_main.gd" id="1_wxg6i"]
+[ext_resource type="Script" path="res://addons/penny_atlas_godot/assets/scripts/atlas_main.gd" id="1_wxg6i"]
 
 [node name="atlas_control" type="Control" node_paths=PackedStringArray("source_button", "target_button")]
 custom_minimum_size = Vector2(0, 640)

@@ -2,6 +2,28 @@
 @tool
 extends Node
 
+class MegaImageClip:
+	var name : String
+	var image : Image
+	var region : Rect2i
+
+	func _init(mega: MegaImage, texture : Texture2D) -> void:
+		name = texture.resource_path.substr(texture.resource_path.rfind("/") + 1)
+		name = name.substr(0, name.rfind("."))
+		image = texture.get_image()
+		region = image.get_used_rect()
+
+		if image.get_format() != mega.image.get_format():
+			image.convert(mega.image.get_format())
+
+
+	func create_atlas(source: Texture2D) -> AtlasTexture:
+		var result := AtlasTexture.new()
+		result.atlas = source
+		result.region = region
+		return result
+
+
 class MegaImage :
 	var image : Image
 	var bitmap : BitMap :
@@ -15,6 +37,8 @@ class MegaImage :
 	var rects : Array[Rect2i]
 	var rects_cumulative : Array[Rect2i]
 	var snaps : Array[Vector2i] = [ Vector2i.ZERO ]
+
+	var clips : Array[MegaImageClip]
 
 	var _width : int = 1
 	var _hight : int = 1
@@ -35,40 +59,46 @@ class MegaImage :
 		image = Image.create_empty(1, 1, false, format)
 
 
-	func add(clip: Image) -> void:
-		clip.convert(Image.FORMAT_RGBA8)
+	func add(texture: Texture2D) -> void:
+		var clip := MegaImageClip.new(self, texture)
 
-		var rect := Rect2i(get_snap_for(clip), clip.get_size())
+		var used := clip.image.get_used_rect()
+		var rect := Rect2i(get_snap_for(used.size), used.size)
 
 		if not full_rect.encloses(rect):
 			size = full_rect.merge(rect).size
-		print("Placing new image at ", rect.position)
+		print("Placing new image at ", rect)
 
-		image.blit_rect(clip, Rect2i(Vector2i.ZERO, rect.size), rect.position)
-		add_rect(rect)
+		image.blit_rect(clip.image, used, rect.position)
+		clip.region.position = rect.position
+		add_clip(clip)
 
 
-	func add_rect(rect: Rect2i) -> void:
-		rects.push_back(rect)
-		rects_cumulative.push_back(rect)
-		snaps.erase(rect.position)
-		var snap1 := rect.position + Vector2i.RIGHT * rect.size.x
-		var snap2 := rect.position + Vector2i.DOWN * rect.size.y
+	func add_clip(clip: MegaImageClip) -> void:
+		clips.push_back(clip)
+		snaps.erase(clip.region.position)
+		var snap1 := clip.region.position + Vector2i.RIGHT * clip.region.size.x
 		if not snaps.has(snap1):
 			snaps.push_back(snap1)
+		var snap2 := clip.region.position + Vector2i.DOWN * clip.region.size.y
 		if not snaps.has(snap2):
 			snaps.push_back(snap2)
 
 
-	func get_snap_for(clip: Image):
+	func get_snap_for(query_size: Vector2i) -> Vector2i:
 		var candidates : Array[Rect2i] = []
 		for snap in snaps:
-			var query := Rect2i(snap, clip.get_size())
-			for rect in rects:
-				if rect.intersects(query): continue
+			var query := Rect2i(snap, query_size)
+			var intersects := false
+			for clip in clips:
+				if clip.region.intersects(query):
+					intersects = true
+					break
+			if not intersects:
 				candidates.push_back(query)
-				break
+
 		if candidates.is_empty():
+			print(snaps)
 			return snaps[0]
 		candidates.sort_custom(sort_candidates)
 		return candidates[0].position
@@ -76,8 +106,6 @@ class MegaImage :
 
 	func sort_candidates(a: Rect2i, b: Rect2i) -> bool:
 		return full_rect.encloses(a) and not full_rect.encloses(b)
-
-
 
 
 @export var source_button : Button
@@ -112,7 +140,7 @@ func go() :
 	print("Start")
 
 	var i = 0
-	var limit = 16
+	var limit = 32
 
 	var mega_image := MegaImage.new()
 
@@ -120,7 +148,7 @@ func go() :
 		if i >= limit: break
 
 		# var res_name : String = texture.resource_path.substr(texture.resource_path.rfind("/") + 1)
-		mega_image.add(texture.get_image())
+		mega_image.add(texture)
 
 		i += 1
 
@@ -136,7 +164,7 @@ func go() :
 		break
 
 	mega_image.image.save_png(target_path)
-	mega_image.bitmap.convert_to_image().save_png(target_path.substr(0, target_path.length() - 4) + "_bitmap.png")
+	# mega_image.bitmap.convert_to_image().save_png(target_path.substr(0, target_path.length() - 4) + "_bitmap.png")
 
 	print("Finished")
 
