@@ -3,12 +3,19 @@
 extends Node
 
 class MegaImageClip:
+	var mega : MegaImage
 	var name : String
+	var folder_name : String
 	var image : Image
 	var region : Rect2i
 
-	func _init(mega: MegaImage, texture : Texture2D) -> void:
-		name = texture.resource_path.substr(texture.resource_path.rfind("/") + 1)
+	var path : String :
+		get: return folder_name + name + ".tres"
+
+	func _init(_mega: MegaImage, texture : Texture2D) -> void:
+		mega = _mega
+		folder_name = texture.resource_path.substr(0, texture.resource_path.rfind("/") + 1)
+		name = texture.resource_path.substr(folder_name.length())
 		name = name.substr(0, name.rfind("."))
 		image = texture.get_image()
 		region = image.get_used_rect()
@@ -17,9 +24,9 @@ class MegaImageClip:
 			image.convert(mega.image.get_format())
 
 
-	func create_atlas(source: Texture2D) -> AtlasTexture:
+	func create_atlas(texture: Texture2D) -> AtlasTexture:
 		var result := AtlasTexture.new()
-		result.atlas = source
+		result.atlas = texture
 		result.region = region
 		return result
 
@@ -140,36 +147,26 @@ func go() :
 	print("Start")
 
 	var i = 0
-	var limit = 32
+	var limit = 16
 
 	var mega_image := MegaImage.new()
 
 	for texture in get_images(source_path):
 		if i >= limit: break
-
-		# var res_name : String = texture.resource_path.substr(texture.resource_path.rfind("/") + 1)
+		i += 1
 		mega_image.add(texture)
 
-		i += 1
+	if not mega_image.image.save_png(target_path) == OK: return
 
-	for j in 0:
-		# res_name = res_name.substr(0, res_name.rfind("."))
-		# var atlas_path : String = target_folder + res_name + ".tres"
-
-		# var atlas := AtlasTexture.new()
-		# atlas.atlas = res
-
-		# print(atlas_path)
-		# ResourceSaver.save(atlas, atlas_path)
-		break
-
-	mega_image.image.save_png(target_path)
-	# mega_image.bitmap.convert_to_image().save_png(target_path.substr(0, target_path.length() - 4) + "_bitmap.png")
+	var res := load(target_path)
+	for clip in mega_image.clips:
+		var atlas := clip.create_atlas(res)
+		var path := target_folder + clip.name + ".tres"
+		ResourceSaver.save(atlas, path)
 
 	print("Finished")
 
-	EditorInterface.get_resource_filesystem().scan()
-	# EditorInterface.get_resource_filesystem().reimport_files([target_path])
+	EditorInterface.get_resource_filesystem().scan.call_deferred()
 
 
 static func get_images(start: String) -> Array[Texture2D]:
