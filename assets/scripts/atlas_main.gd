@@ -2,6 +2,11 @@
 @tool
 extends Node
 
+## If enabled, individual islands will be cropped and added to the mega image. Very slow process, but significantly compresses images and can also be used to clean up dirty images.
+@export var crop_islands : bool = false
+@export var crop_size_threshold : int = -1
+@export_range(0.0, 1.0, 0.05) var crop_opacity_threshold : float = 0.1
+
 class MegaImageClip:
 	var mega : MegaImage
 	var name : String
