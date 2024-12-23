@@ -1,29 +1,26 @@
 @tool
 extends EditorPlugin
 
-const MAIN_PANEL_SCENE : PackedScene = preload("res://addons/penny_atlas_godot/assets/scenes/atlas_main_screen.tscn")
-
-var main_panel : Control
-
-
 func _enter_tree() -> void:
-	main_panel = MAIN_PANEL_SCENE.instantiate()
-	EditorInterface.get_editor_main_screen().add_child(main_panel)
-	_make_visible(false)
+	# _make_visible(false)
+	pass
 
 
 func _exit_tree() -> void:
-	if main_panel:
-		main_panel.queue_free()
+	# if main_panel:
+	# 	main_panel.queue_free()
+	pass
 
 
 func _has_main_screen() -> bool:
-	return true
+	# return true
+	return false
 
 
 func _make_visible(visible: bool) -> void:
-	if main_panel:
-		main_panel.visible = visible
+	# if main_panel:
+	# 	main_panel.visible = visible
+	pass
 
 
 func _get_plugin_name() -> String:
