@@ -1,6 +1,6 @@
 
 @tool
-class_name CompositeSprite2D extends Sprite2D
+class_name CompositeSprite2D extends Node2D
 
 const COMPONENT_KEYS = ["a", "n", "o", "e", "m"]
 
@@ -41,7 +41,13 @@ var texture_key : String :
 
 
 func _enter_tree() -> void:
-	self.texture_changed.connect(refresh_from_texture)
+	var this = self
+	if this is Sprite2D:
+		self.texture_changed.connect(refresh_from_texture)
+	elif this is AnimatedSprite2D:
+		self.sprite_frames_changed.connect(refresh_from_texture)
+		self.animation_changed.connect(refresh_from_texture)
+		self.frame_changed.connect(refresh_from_texture)
 
 
 func refresh_from_texture() -> void:
@@ -49,7 +55,3 @@ func refresh_from_texture() -> void:
 		composite = self.texture
 	else:
 		composite = null
-
-
-func refresh_from_attributes() -> void:
-	pass
