@@ -27,8 +27,8 @@ class_name AtlasMapper extends Resource
 
 
 @export var images : Array[Texture2D]
-@export_file("*.json") var data_file_path : String
-@export_dir var maps_folder : String
+@export_file("*.json") var json_path : String
+@export_dir var atlases_folder : String
 @export_dir var composites_folder : String
 @export_storage var created_paths : Dictionary
 
@@ -46,12 +46,12 @@ func do_destroy(scan: bool = true) -> void:
 func do_reimport() -> void:
 	do_destroy(false)
 
-	var file := FileAccess.open(data_file_path, FileAccess.READ)
+	var file := FileAccess.open(json_path, FileAccess.READ)
 	var data : Dictionary = JSON.parse_string(file.get_as_text())
 
 	var maps : Dictionary = data["maps"]
 	for k in maps.keys():
-		var mega_texture_path : String = data_file_path.substr(0, data_file_path.rfind("/") + 1) + k
+		var mega_texture_path : String = json_path.substr(0, json_path.rfind("/") + 1) + k
 		var mega_texture : Texture2D = load(mega_texture_path)
 		for entry in maps[k]:			
 			var source_offset := Vector2i(
@@ -72,7 +72,7 @@ func do_reimport() -> void:
 			atlas.region = Rect2(target_region)
 			atlas.filter_clip = true
 
-			var atlas_path : String = "%s/%s.tres" % [maps_folder, atlas.name]
+			var atlas_path : String = "%s/%s.tres" % [atlases_folder, atlas.name]
 			ResourceSaver.save(atlas, atlas_path)
 			created_paths[atlas.name] = atlas_path
 
