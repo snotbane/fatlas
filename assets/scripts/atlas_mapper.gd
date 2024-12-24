@@ -28,12 +28,14 @@ class_name AtlasMapper extends Resource
 
 @export var images : Array[Texture2D]
 @export_file("*.json") var data_file_path : String
-@export_dir var export_folder : String
-@export_storage var created_paths : PackedStringArray
+@export_dir var maps_folder : String
+@export_dir var composites_folder : String
+@export_storage var created_paths : Dictionary
 
 
 func do_destroy(scan: bool = true) -> void:
-	for path in created_paths:
+	for k in created_paths:
+		var path : String = created_paths[k]
 		if not FileAccess.file_exists(path): continue
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 		if scan:
@@ -42,6 +44,8 @@ func do_destroy(scan: bool = true) -> void:
 
 
 func do_reimport() -> void:
+	do_destroy(false)
+
 	var file := FileAccess.open(data_file_path, FileAccess.READ)
 	var data : Dictionary = JSON.parse_string(file.get_as_text())
 
@@ -68,15 +72,25 @@ func do_reimport() -> void:
 			atlas.region = Rect2(target_region)
 			atlas.filter_clip = true
 
-			var atlas_path : String = "%s/%s.tres" % [export_folder, atlas.name]
+			var atlas_path : String = "%s/%s.tres" % [maps_folder, atlas.name]
 			ResourceSaver.save(atlas, atlas_path)
-			created_paths.push_back(atlas_path)
+			created_paths[atlas.name] = atlas_path
 
 	var composites : Dictionary = data["composites"]
 	for base_name in composites.keys():
 		var base : Dictionary = composites[base_name]
+		var composite := CompositeTexture2D.new()
+		var composite_path : String = "%s/%s.tres" % [composites_folder, base_name]
 		for suffix in base.keys():
-			var link : String = composites[base_name]
-			print(link)
+			var link : String = base[suffix]
+			composite.maps[suffix] = load(created_paths[link])
+		ResourceSaver.save(composite, composite_path)
+		# EditorInterface.get_resource_previewer().queue_edited_resource_preview(composite, composite, "bar", null)
+		# EditorInterface.get_resource_previewer().queue_resource_preview(composite_path, composite, "bar", null)
+		# EditorInterface.get_resource_previewer().queue_resource_preview(composite_path, composite, "bar", null)
 
 	EditorInterface.get_resource_filesystem().scan()
+
+
+func foo() -> void:
+	pass

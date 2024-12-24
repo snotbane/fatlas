@@ -1,15 +1,18 @@
+
 @tool
 extends EditorPlugin
 
+var PREVIEW_GENERATOR_SCRIPT := preload("res://addons/penny_atlas_godot/assets/scripts/composite_texture2d_preview_generator.gd")
+var preview_generator : EditorResourcePreviewGenerator
+
 func _enter_tree() -> void:
-	# _make_visible(false)
-	pass
+	preview_generator = PREVIEW_GENERATOR_SCRIPT.new()
+	print(preview_generator)
+	EditorInterface.get_resource_previewer().add_preview_generator(preview_generator)
 
 
 func _exit_tree() -> void:
-	# if main_panel:
-	# 	main_panel.queue_free()
-	pass
+	EditorInterface.get_resource_previewer().remove_preview_generator(preview_generator)
 
 
 func _has_main_screen() -> bool:
