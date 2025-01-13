@@ -30,7 +30,7 @@ class_name AtlasMapper extends Resource
 @export_file("*.json") var json_path : String
 @export_dir var atlases_folder : String
 @export_dir var composites_folder : String
-@export_storage var created_paths : Dictionary
+# @export_storage var created_paths : Dictionary
 
 
 # func do_destroy(scan: bool = true) -> void:
@@ -45,6 +45,7 @@ class_name AtlasMapper extends Resource
 
 func do_reimport() -> void:
 	# do_destroy(false)
+	var created_paths : Dictionary
 
 	var file := FileAccess.open(json_path, FileAccess.READ)
 	var data : Dictionary = JSON.parse_string(file.get_as_text())
@@ -66,8 +67,10 @@ func do_reimport() -> void:
 			)
 
 			var atlas_path : String = "%s/%s.tres" % [atlases_folder, entry["name"]]
-			var atlas : OffsetAtlasTexture = load(atlas_path)
-			if atlas == null:
+			var atlas : OffsetAtlasTexture
+			if FileAccess.file_exists(atlas_path):
+				atlas = load(atlas_path)
+			else:
 				atlas = OffsetAtlasTexture.new()
 
 			atlas.name = entry["name"]
@@ -77,18 +80,19 @@ func do_reimport() -> void:
 			atlas.filter_clip = true
 
 			ResourceSaver.save(atlas, atlas_path)
-			# created_paths[atlas.name] = atlas_path
+			created_paths[atlas.name] = atlas_path
 
 	var composites : Dictionary = data["composites"]
 	for base_name in composites.keys():
 		var base : Dictionary = composites[base_name]
 
 		var composite_path : String = "%s/%s.tres" % [composites_folder, base_name]
-		var composite : CompositeTexture2D = load(composite_path)
-		if composite == null:
-			composite = CompositeTexture2D.new()
-		else:
+		var composite : CompositeTexture2D
+		if FileAccess.file_exists(composite_path):
+			composite = load(composite_path)
 			composite.maps.clear()
+		else:
+			composite = CompositeTexture2D.new()
 		
 		for suffix in base.keys():
 			var link : String = base[suffix]
