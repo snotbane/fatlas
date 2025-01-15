@@ -48,6 +48,10 @@ func do_reimport() -> void:
 	var created_paths : Dictionary
 
 	var file := FileAccess.open(json_path, FileAccess.READ)
+	if file == null:
+		printerr("AtlasMapper: null file at path '%s'" % json_path)
+		return
+		
 	var data : Dictionary = JSON.parse_string(file.get_as_text())
 
 	var maps : Dictionary = data["maps"]
