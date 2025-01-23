@@ -7,7 +7,7 @@ var preview_generator : EditorResourcePreviewGenerator
 
 func _enter_tree() -> void:
 	preview_generator = PREVIEW_GENERATOR_SCRIPT.new()
-	print(preview_generator)
+	# print(preview_generator)
 	EditorInterface.get_resource_previewer().add_preview_generator(preview_generator)
 
 
