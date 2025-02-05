@@ -2,7 +2,7 @@
 @tool
 class_name CompositeSprite2D extends Node2D
 
-const COMPONENT_KEYS = ["a", "n", "o", "e", "m"]
+const COMPONENT_KEYS = ["a", "e", "m", "n"]
 
 var _composite : CompositeTexture2D
 var composite : CompositeTexture2D :
