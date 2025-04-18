@@ -2,10 +2,10 @@
 @tool
 class_name AtlasMapper extends Resource
 
-@export var create_resources : bool :
-	set(value):
-		do_reimport()
+@export_file("*.json") var json_path : String
+# @export var images : Array[Texture2D]
 
+@export_tool_button("Refresh Resources") var create_resources := do_reimport
 # @export var destroy_resources : bool :
 # 	set(value):
 # 		if created_paths.is_empty():
@@ -26,19 +26,15 @@ class_name AtlasMapper extends Resource
 # 		confirm.queue_free()
 
 
-@export var images : Array[Texture2D]
-@export_file("*.json") var json_path : String
-# @export_dir var atlases_folder : String
-# @export_dir var composites_folder : String
-# @export_storage var created_paths : Dictionary
-
 var self_folder : String :
 	get: return self.resource_path.substr(0, self.resource_path.rfind("/"))
 
 var atlases_folder : String :
-	get: return self_folder + "/atlases"
+	get: return self_folder.path_join("atlases")
 var composites_folder : String :
-	get: return self_folder + "/composites"
+	get: return self_folder.path_join("composites")
+var textures_folder : String :
+	get: return self_folder.path_join("textures")
 
 
 # func do_destroy(scan: bool = true) -> void:
@@ -52,10 +48,17 @@ var composites_folder : String :
 
 
 func do_reimport() -> void:
+	if not DirAccess.dir_exists_absolute(textures_folder):
+		printerr("textures folder does not exist.")
+		return
 	if not DirAccess.dir_exists_absolute(atlases_folder):
 		DirAccess.make_dir_recursive_absolute(atlases_folder)
 	if not DirAccess.dir_exists_absolute(composites_folder):
 		DirAccess.make_dir_recursive_absolute(composites_folder)
+
+	var images : Array[Texture2D]
+	for i in Utils.get_paths_in_project(".png", [], textures_folder):
+		images.push_back(load(i))
 
 	# do_destroy(false)
 	var created_paths : Dictionary
@@ -67,30 +70,23 @@ func do_reimport() -> void:
 
 	var data : Dictionary = JSON.parse_string(file.get_as_text())
 
-	var maps : Dictionary = data["maps"]
-	for k in maps.keys():
-		var mega_texture_path : String = json_path.substr(0, json_path.rfind("/") + 1) + k
+	var texture : Dictionary = data["atlas"]
+	for k in texture.keys():
+		var mega_texture_path : String = json_path.substr(0, json_path.rfind("/") + 1).path_join(k)
 		var mega_texture : Texture2D = load(mega_texture_path)
-		for entry in maps[k]:
-			var source_offset := Vector2i(
-				entry["source_offset"]["x"],
-				entry["source_offset"]["y"],
-			)
-			var target_region := Rect2i(
-				entry["target_region"]["x"],
-				entry["target_region"]["y"],
-				entry["target_region"]["w"],
-				entry["target_region"]["h"],
-			)
+		for subimage_name in texture[k].keys():
+			var coord : Array = texture[k][subimage_name]
+			var source_offset := Vector2i(coord[2], coord[3])
+			var target_region := Rect2i(coord[0], coord[1], coord[4], coord[5])
 
-			var atlas_path : String = "%s/%s.tres" % [atlases_folder, entry["name"]]
+			var atlas_path : String = atlases_folder.path_join(subimage_name + ".tres")
 			var atlas : OffsetAtlasTexture
 			if FileAccess.file_exists(atlas_path):
 				atlas = load(atlas_path)
 			else:
 				atlas = OffsetAtlasTexture.new()
 
-			atlas.name = entry["name"]
+			atlas.name = subimage_name
 			atlas.atlas = mega_texture
 			atlas.offset = Vector2i(source_offset)
 			atlas.region = Rect2(target_region)
@@ -99,11 +95,11 @@ func do_reimport() -> void:
 			ResourceSaver.save(atlas, atlas_path)
 			created_paths[atlas.name] = atlas_path
 
-	var composites : Dictionary = data["composites"]
-	for base_name in composites.keys():
-		var base : Dictionary = composites[base_name]
+	var compo : Dictionary = data["compo"]
+	for base_name in compo.keys():
+		var base : Dictionary = compo[base_name]
 
-		var composite_path : String = "%s/%s.tres" % [composites_folder, base_name]
+		var composite_path : String = composites_folder.path_join(base_name + ".tres")
 		var composite : CompositeTexture2D
 		if FileAccess.file_exists(composite_path):
 			composite = load(composite_path)
