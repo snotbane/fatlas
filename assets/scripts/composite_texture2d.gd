@@ -1,6 +1,4 @@
-
-@tool
-class_name CompositeTexture2D extends Texture2D
+@tool class_name CompositeTexture2D extends Texture2D
 
 static var unique_drawers : Dictionary
 @export var maps : Dictionary
