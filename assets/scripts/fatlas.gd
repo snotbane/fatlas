@@ -1,12 +1,16 @@
 @tool class_name Fatlas extends Resource
 
+const TEXTURE_FOLDER_NAME := "textures"
+const COMPOSITE_FOLDER_NAME := "compo"
+const ATLAS_FOLDER_NAME := "atlas"
+
 @export_storage var json_path : String
 
 func refresh_resources() -> void:
 	var base_folder := json_path.substr(0, json_path.rfind("/"))
-	var texture_folder := base_folder.path_join("textures")
-	var compo_folder := base_folder.path_join("compo")
-	var atlas_folder := base_folder.path_join("atlas")
+	var texture_folder := base_folder.path_join(TEXTURE_FOLDER_NAME)
+	var compo_folder := base_folder.path_join(COMPOSITE_FOLDER_NAME)
+	var atlas_folder := base_folder.path_join(ATLAS_FOLDER_NAME)
 
 	if not DirAccess.dir_exists_absolute(texture_folder):
 		DirAccess.make_dir_recursive_absolute(texture_folder)
@@ -15,11 +19,15 @@ func refresh_resources() -> void:
 	if not DirAccess.dir_exists_absolute(compo_folder):
 		DirAccess.make_dir_recursive_absolute(compo_folder)
 
+	var existing_atlases := FatlasUtils.get_paths_in_folder(atlas_folder)
+	var existing_compos := FatlasUtils.get_paths_in_folder(compo_folder)
+
 	var images : Array[Texture2D]
-	for i in Utils.get_paths_in_project(".png", [], texture_folder):
+	for i in FatlasUtils.get_paths_in_folder(texture_folder, RegEx.create_from_string(".png$")):
 		images.push_back(load(i))
 
 	# do_destroy(false)
+	var fresh_paths : PackedStringArray = []
 	var created_paths : Dictionary
 
 	var file := FileAccess.open(json_path, FileAccess.READ)
@@ -29,7 +37,7 @@ func refresh_resources() -> void:
 
 	var data : Dictionary = JSON.parse_string(file.get_as_text())
 
-	var texture : Dictionary = data["atlas"]
+	var texture : Dictionary = data[ATLAS_FOLDER_NAME]
 	for k in texture.keys():
 		var mega_texture : Texture2D = load(texture_folder.path_join(k))
 		for subimage_name in texture[k].keys():
@@ -53,14 +61,16 @@ func refresh_resources() -> void:
 			ResourceSaver.save(atlas, atlas_path)
 			created_paths[atlas.name] = atlas_path
 
-	var compo : Dictionary = data["compo"]
+	fresh_paths.append_array(created_paths.values())
+
+	var compo : Dictionary = data[COMPOSITE_FOLDER_NAME]
 	for base_name in compo.keys():
 		var base : Dictionary = compo[base_name]
 
-		var composite_path : String = compo_folder.path_join(base_name + ".tres")
+		var compo_path : String = compo_folder.path_join(base_name + ".tres")
 		var composite : CompositeTexture2D
-		if FileAccess.file_exists(composite_path):
-			composite = load(composite_path)
+		if FileAccess.file_exists(compo_path):
+			composite = load(compo_path)
 			composite.maps.clear()
 		else:
 			composite = CompositeTexture2D.new()
@@ -69,10 +79,20 @@ func refresh_resources() -> void:
 			var link : String = base[suffix]
 			composite.maps[suffix] = load(created_paths[link])
 
-		ResourceSaver.save(composite, composite_path)
+		ResourceSaver.save(composite, compo_path)
+		fresh_paths.append(compo_path)
 
 		# EditorInterface.get_resource_previewer().queue_edited_resource_preview(composite, composite, "bar", null)
 		# EditorInterface.get_resource_previewer().queue_resource_preview(composite_path, composite, "bar", null)
 		# EditorInterface.get_resource_previewer().queue_resource_preview(composite_path, composite, "bar", null)
+
+	var dir := DirAccess.open(atlas_folder)
+	for path in existing_atlases:
+		if path not in fresh_paths:
+			dir.remove(path)
+	dir = DirAccess.open(compo_folder)
+	for path in existing_compos:
+		if path not in fresh_paths:
+			dir.remove(path)
 
 	EditorInterface.get_resource_filesystem().scan()
