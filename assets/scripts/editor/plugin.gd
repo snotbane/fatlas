@@ -1,6 +1,6 @@
 @tool extends EditorPlugin
 
-var PREVIEW_GENERATOR_SCRIPT := preload("res://addons/fatlas/assets/scripts/composite_texture2d_preview_generator.gd")
+var PREVIEW_GENERATOR_SCRIPT := preload("res://addons/fatlas/assets/scripts/resources/composite_texture2d_preview_generator.gd")
 var preview_generator : EditorResourcePreviewGenerator
 
 func _enable_plugin() -> void:
