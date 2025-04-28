@@ -1,80 +1,42 @@
 ## A collection of [Node2D]s that can be cloned to make up other components of a full image.
 @tool class_name MaterializedSpriteTemplate extends Node2D
 
-enum PreviewLocation {
-	ON_TOP,
-	RIGHT,
-	BOTTOM
-}
-
-var _size : Vector2i
-##
-@export var size : Vector2i :
-	get: return _size
-	set(value):
-		if _size == value: return
-		_size = value
-
-		preview_location = preview_location
-
+@export var size : Vector2i
 
 @export_subgroup("Preview")
 
 var preview : MaterializedSpriteComponent
-@onready var _show_preview : bool = false
-##
-@export var show_preview : bool :
-	get: return _show_preview
-	set(value):
-		if not Engine.is_editor_hint(): return
-		if _show_preview == value: return
-		_show_preview = value
-
-		if preview:
-			preview.queue_free()
-			preview = null
-
-		if _show_preview:
-			preview = MaterializedSpriteComponent.new()
-			preview.name = "preview"
-			self.add_child(preview, false, INTERNAL_MODE_BACK)
-			self.set_deferred("preview_location", preview_location)
-			preview.template = self
-			preview.mirrored = _preview_mirror
-			preview.component = _preview_component
-
 
 var _preview_mirror : bool
-##
+## Shows what the sprite will look like when mirrored. No effect in game.
 @export var preview_mirror : bool :
 	get: return _preview_mirror
 	set(value):
 		_preview_mirror = value
 		if preview == null: return
 		preview.mirrored = _preview_mirror
+		preview.refresh()
 
 
 var _preview_component : MaterializedSpriteComponent.TextureComponent
-##
+## Shows what the sprite will look like with different components. No effect in game.
 @export var preview_component : MaterializedSpriteComponent.TextureComponent :
 	get: return _preview_component
 	set(value):
 		_preview_component = value
 		if preview == null: return
 		preview.component = _preview_component
+		preview.refresh()
 
 
-var _preview_location : PreviewLocation
-##
-@export var preview_location : PreviewLocation :
-	get: return _preview_location
-	set(value):
-		_preview_location = value
+func _ready() -> void:
+	# if not Engine.is_editor_hint() or self != get_tree().edited_scene_root: return
 
-		if preview == null : return
+	preview = MaterializedSpriteComponent.new()
 
-		match _preview_location:
-			PreviewLocation.ON_TOP: preview.position = Vector2.ZERO
-			PreviewLocation.RIGHT: preview.position =  Vector2.RIGHT * Vector2(self.size)
-			PreviewLocation.BOTTOM: preview.position = Vector2.DOWN * Vector2(self.size)
-
+	if Engine.is_editor_hint():
+		self.add_child(preview, false, INTERNAL_MODE_BACK)
+		preview.populate(self, _preview_mirror, _preview_component)
+	else:
+		self.add_sibling.call_deferred(preview, false)
+		preview.populate(self, false, MaterializedSpriteComponent.TextureComponent.ALBEDO)

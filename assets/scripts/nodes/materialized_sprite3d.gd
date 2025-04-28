@@ -116,9 +116,7 @@ func create_subviewport_from_template(mirrored : bool, component : MaterializedS
 		self.material.set_shader_parameter(suffix.substr(1), vptexture)
 
 	var comp := MaterializedSpriteComponent.new()
-	comp.template = template
-	comp.mirrored = mirrored
-	comp.component = component
+	comp.populate(template, mirrored, component)
 	result.add_child(comp)
 	comp.owner = get_tree().edited_scene_root
 	comp.name = "_" + template.name + suffix
@@ -140,6 +138,6 @@ static func get_suffix(mirrored: bool, component : MaterializedSpriteComponent.T
 	match component:
 		MaterializedSpriteComponent.TextureComponent.ALBEDO: 	result += "_a"
 		MaterializedSpriteComponent.TextureComponent.EMISSIVE: 	result += "_e"
-		MaterializedSpriteComponent.TextureComponent.ROM: 		result += "_m"
+		MaterializedSpriteComponent.TextureComponent.ROUGHMAT:	result += "_m"
 		MaterializedSpriteComponent.TextureComponent.NORMAL: 	result += "_n"
 	return result

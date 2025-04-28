@@ -1,32 +1,55 @@
 ## A single component copied from a [MaterializedSpriteTemplate]. Contains many [MaterializedSpriteElement]s (layers).
 @tool class_name MaterializedSpriteComponent extends Node2D
 
-const ELEMENT_SCRIPT := preload("res://addons/fatlas/assets/scripts/nodes/materialized_sprite_element.gd")
+const COMPONENT_KEYS = ["a", "e", "m", "n"]
 
 enum TextureComponent {
 	ALBEDO,
 	EMISSIVE,
-	ROM,
+	ROUGHMAT,
 	NORMAL,
 }
 
-var _template : MaterializedSpriteTemplate
-##
-@export var template : MaterializedSpriteTemplate :
-	get: return _template
-	set(value):
-		if _template == value: return
-		_template = value
 
-		for child in self.get_children():
-			child.queue_free()
-		sprite_nodes.clear()
 
-		if _template == null: return
+var mirrored : bool
+var component : TextureComponent
+var template : MaterializedSpriteTemplate
+var sprite_nodes : Dictionary
 
-		position = _template.position
-		create_sprites_from_node(_template)
-		refresh_all()
+
+var texture_key : StringName :
+	get:
+		var mirrored_string : String = "l" if mirrored else "r"
+		var component_string : String = COMPONENT_KEYS[component]
+		return "_%s_%s" % [mirrored_string, component_string]
+
+
+func populate(__template: MaterializedSpriteTemplate, __mirrored: bool, __component: TextureComponent) -> void:
+	template = __template
+	mirrored = __mirrored
+	component = __component
+
+	# if component == TextureComponent.ALBEDO:
+	# 	self.modulate = template.modulate
+	# 	self.self_modulate = template.self_modulate
+
+	refresh()
+
+
+func refresh() -> void:
+	for child in self.get_children():
+		child.queue_free()
+	sprite_nodes.clear()
+
+	if template == null: return
+
+	position = template.position
+	create_sprites_from_node(template)
+
+
+func get_animated_sprite_current_texture(sprite: AnimatedSprite2D) -> Texture2D:
+	return sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame)
 
 
 func create_sprites_from_node(node: Node2D) -> void:
@@ -39,46 +62,21 @@ func create_sprites_from_node(node: Node2D) -> void:
 			create_sprites_from_node(child)
 
 
-var _mirrored : bool
-##
-@export var mirrored : bool :
-	get: return _mirrored
-	set(value):
-		if _mirrored == value: return
-		_mirrored = value
-		for mesh in sprite_nodes.keys():
-			mesh.mirrored = _mirrored
-		# refresh_all()
+func create_sprite_from_sprite_2d(sprite: Sprite2D) -> Sprite2D:
+	var result := create_mesh(sprite, sprite.texture)
+	return result
 
 
-var _component : TextureComponent
-##
-@export var component : TextureComponent :
-	get: return _component
-	set(value):
-		if _component == value: return
-		_component = value
-		for mesh in sprite_nodes.keys():
-			mesh.component = _component
-		# refresh_all()
-
-
-var sprite_nodes : Dictionary
-
-func refresh_all() -> void:
-	for mesh in sprite_nodes.keys():
-		mesh.mirrored = mirrored
-		mesh.component = component
-
-
-func get_animated_sprite_current_texture(sprite: AnimatedSprite2D) -> Texture2D:
-	return sprite.sprite_frames.get_frame_texture(sprite.animation, sprite.frame)
+func create_sprite_from_animated_sprite_2d(sprite: AnimatedSprite2D) -> Sprite2D:
+	var result := create_mesh(sprite, get_animated_sprite_current_texture(sprite))
+	return result
 
 
 func create_mesh(node: Node2D, texture: Texture2D) -> Sprite2D:
-	var result := Sprite2D.new()
+	var result := MaterializedSpriteElement.new()
+	result.populate(self, node)
 
-	result.set_script(ELEMENT_SCRIPT)
+	# result.set_script(ELEMENT_SCRIPT)
 	result.texture = texture
 	result.centered = node.centered
 	result.name = node.name
@@ -87,20 +85,6 @@ func create_mesh(node: Node2D, texture: Texture2D) -> Sprite2D:
 	self.sprite_nodes[result] = node
 	self.add_child(result, false, INTERNAL_MODE_DISABLED)
 
-	return result
-
-
-func create_sprite_from_sprite_2d(sprite: Sprite2D) -> Sprite2D:
-	var result := create_mesh(sprite, sprite.texture)
-	sprite.texture_changed.connect(refresh_sprite2d.bind(result))
-	return result
-
-
-func create_sprite_from_animated_sprite_2d(sprite: AnimatedSprite2D) -> Sprite2D:
-	var result := create_mesh(sprite, get_animated_sprite_current_texture(sprite))
-	sprite.sprite_frames_changed.connect(refresh_animated_sprite2d.bind(result))
-	sprite.animation_changed.connect(refresh_animated_sprite2d.bind(result))
-	sprite.frame_changed.connect(refresh_animated_sprite2d.bind(result))
 	return result
 
 
