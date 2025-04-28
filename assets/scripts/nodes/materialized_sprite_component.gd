@@ -1,8 +1,7 @@
+## A single component copied from a [MaterializedSpriteTemplate]. Contains many [MaterializedSpriteElement]s (layers).
+@tool class_name MaterializedSpriteComponent extends Node2D
 
-## A single element
-@tool class_name SpriteComponent extends Node2D
-
-const COMPOSITE_SPRITE2D_SCRIPT := preload("res://addons/fatlas/assets/scripts/nodes/composite_sprite2d.gd")
+const ELEMENT_SCRIPT := preload("res://addons/fatlas/assets/scripts/nodes/materialized_sprite_element.gd")
 
 enum TextureComponent {
 	ALBEDO,
@@ -11,9 +10,9 @@ enum TextureComponent {
 	NORMAL,
 }
 
-var _template : SpriteComponentTemplate
+var _template : MaterializedSpriteTemplate
 ##
-@export var template : SpriteComponentTemplate :
+@export var template : MaterializedSpriteTemplate :
 	get: return _template
 	set(value):
 		if _template == value: return
@@ -79,7 +78,7 @@ func get_animated_sprite_current_texture(sprite: AnimatedSprite2D) -> Texture2D:
 func create_mesh(node: Node2D, texture: Texture2D) -> Sprite2D:
 	var result := Sprite2D.new()
 
-	result.set_script(COMPOSITE_SPRITE2D_SCRIPT)
+	result.set_script(ELEMENT_SCRIPT)
 	result.texture = texture
 	result.centered = node.centered
 	result.name = node.name

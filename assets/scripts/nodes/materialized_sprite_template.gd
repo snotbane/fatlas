@@ -1,13 +1,11 @@
-
-@tool
-class_name SpriteComponentTemplate extends Node2D
+## A collection of [Node2D]s that can be cloned to make up other components of a full image.
+@tool class_name MaterializedSpriteTemplate extends Node2D
 
 enum PreviewLocation {
 	ON_TOP,
 	RIGHT,
 	BOTTOM
 }
-
 
 var _size : Vector2i
 ##
@@ -22,7 +20,7 @@ var _size : Vector2i
 
 @export_subgroup("Preview")
 
-var preview : SpriteComponent
+var preview : MaterializedSpriteComponent
 @onready var _show_preview : bool = false
 ##
 @export var show_preview : bool :
@@ -37,7 +35,7 @@ var preview : SpriteComponent
 			preview = null
 
 		if _show_preview:
-			preview = SpriteComponent.new()
+			preview = MaterializedSpriteComponent.new()
 			preview.name = "preview"
 			self.add_child(preview, false, INTERNAL_MODE_BACK)
 			self.set_deferred("preview_location", preview_location)
@@ -56,9 +54,9 @@ var _preview_mirror : bool
 		preview.mirrored = _preview_mirror
 
 
-var _preview_component : SpriteComponent.TextureComponent
+var _preview_component : MaterializedSpriteComponent.TextureComponent
 ##
-@export var preview_component : SpriteComponent.TextureComponent :
+@export var preview_component : MaterializedSpriteComponent.TextureComponent :
 	get: return _preview_component
 	set(value):
 		_preview_component = value

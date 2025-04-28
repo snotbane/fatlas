@@ -1,4 +1,4 @@
-@tool extends CompositeVisualInstance3D
+@tool extends MaterializedSprite3D
 
 func refresh() -> void:
 	super.refresh()

@@ -1,6 +1,6 @@
 
-##
-@tool class_name CompositeSprite2D extends Node2D
+## A single sprite within a [MaterializedSprite].
+@tool class_name MaterializedSpriteElement extends Node2D
 
 const COMPONENT_KEYS = ["a", "e", "m", "n"]
 

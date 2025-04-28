@@ -1,8 +1,9 @@
-@tool class_name CompositeVisualInstance3D extends VisualInstance3D
+# Abstract base class for a node that uses [MaterializedSpriteComponent]s.
+@tool class_name MaterializedSprite3D extends VisualInstance3D
 
-var _template : SpriteComponentTemplate
+var _template : MaterializedSpriteTemplate
 ## Reference to the sprite component template.
-@export var template : SpriteComponentTemplate :
+@export var template : MaterializedSpriteTemplate :
 	get: return _template
 	set(value):
 		if _template == value: return
@@ -82,9 +83,9 @@ func refresh_viewports() -> void:
 		self.material.set_shader_parameter("r_a", vptexture)
 
 	if enable_mirrors:
-		create_subviewport_from_template(true, SpriteComponent.TextureComponent.ALBEDO)
+		create_subviewport_from_template(true, MaterializedSpriteComponent.TextureComponent.ALBEDO)
 	else:
-		remove_subviewport_from_template(true, SpriteComponent.TextureComponent.ALBEDO)
+		remove_subviewport_from_template(true, MaterializedSpriteComponent.TextureComponent.ALBEDO)
 
 	for i in 3:
 		var i1 := i + 1
@@ -99,7 +100,7 @@ func refresh_viewports() -> void:
 		create_subviewport_from_template(true, i1)
 
 
-func create_subviewport_from_template(mirrored : bool, component : SpriteComponent.TextureComponent) -> SubViewport:
+func create_subviewport_from_template(mirrored : bool, component : MaterializedSpriteComponent.TextureComponent) -> SubViewport:
 	var suffix := get_suffix(mirrored, component)
 
 	var result : SubViewport = viewport.duplicate()
@@ -114,7 +115,7 @@ func create_subviewport_from_template(mirrored : bool, component : SpriteCompone
 		vptexture.viewport_path = get_tree().edited_scene_root.get_path_to(result)
 		self.material.set_shader_parameter(suffix.substr(1), vptexture)
 
-	var comp := SpriteComponent.new()
+	var comp := MaterializedSpriteComponent.new()
 	comp.template = template
 	comp.mirrored = mirrored
 	comp.component = component
@@ -127,18 +128,18 @@ func create_subviewport_from_template(mirrored : bool, component : SpriteCompone
 	return result
 
 
-func remove_subviewport_from_template(mirrored: bool, component : SpriteComponent.TextureComponent) -> void:
+func remove_subviewport_from_template(mirrored: bool, component : MaterializedSpriteComponent.TextureComponent) -> void:
 	var suffix := get_suffix(mirrored, component)
 
 	if self.material is ShaderMaterial:
 		self.material.set_shader_parameter(suffix.substr(1), null)
 
 
-static func get_suffix(mirrored: bool, component : SpriteComponent.TextureComponent) -> String:
+static func get_suffix(mirrored: bool, component : MaterializedSpriteComponent.TextureComponent) -> String:
 	var result := "_l" if mirrored else "_r"
 	match component:
-		SpriteComponent.TextureComponent.ALBEDO: 	result += "_a"
-		SpriteComponent.TextureComponent.EMISSIVE: 	result += "_e"
-		SpriteComponent.TextureComponent.ROM: 		result += "_m"
-		SpriteComponent.TextureComponent.NORMAL: 	result += "_n"
+		MaterializedSpriteComponent.TextureComponent.ALBEDO: 	result += "_a"
+		MaterializedSpriteComponent.TextureComponent.EMISSIVE: 	result += "_e"
+		MaterializedSpriteComponent.TextureComponent.ROM: 		result += "_m"
+		MaterializedSpriteComponent.TextureComponent.NORMAL: 	result += "_n"
 	return result
