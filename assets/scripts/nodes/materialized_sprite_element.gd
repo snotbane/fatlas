@@ -38,4 +38,4 @@ func refresh_sprite2d_from_texture() -> void:
 
 func refresh_animated_sprite2d_from_texture() -> void:
 	var tex : Texture2D = template.sprite_frames.get_frame_texture(template.animation, template.frame)
-	self.texture = (tex as CompositeTexture2D).maps.get(component.texture_key)
+	self.texture = (tex as CompositeTexture2D).maps.get(component.texture_key) if tex else null
