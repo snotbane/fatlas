@@ -104,11 +104,11 @@ func create_subviewport_from_template(mirrored : bool, component : MaterializedS
 	var suffix := get_suffix(mirrored, component)
 
 	var result : SubViewport = viewport.duplicate()
+	result.name = "_" + viewport.name.substr(0, viewport.name.length() - suffix.length()) + suffix
 	while result.get_child_count() > 0:
 		result.remove_child(result.get_child(0))
 	self.add_child(result)
 	result.owner = get_tree().edited_scene_root
-	result.name = "_" + viewport.name.substr(0, viewport.name.length() - suffix.length()) + suffix
 
 	if self.material is ShaderMaterial:
 		var vptexture := ViewportTexture.new()
@@ -116,10 +116,10 @@ func create_subviewport_from_template(mirrored : bool, component : MaterializedS
 		self.material.set_shader_parameter(suffix.substr(1), vptexture)
 
 	var comp := MaterializedSpriteComponent.new()
+	comp.name = "_" + template.name + suffix
 	comp.populate(template, mirrored, component)
 	result.add_child(comp)
 	comp.owner = get_tree().edited_scene_root
-	comp.name = "_" + template.name + suffix
 
 	result.set_display_folded(true)
 

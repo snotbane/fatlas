@@ -11,18 +11,20 @@ enum TextureComponent {
 }
 
 
-
-var mirrored : bool
-var component : TextureComponent
-var template : MaterializedSpriteTemplate
-var sprite_nodes : Dictionary
-
+@export var mirrored : bool
+@export var component : TextureComponent
+@export var template : MaterializedSpriteTemplate
 
 var texture_key : StringName :
 	get:
 		var mirrored_string : String = "l" if mirrored else "r"
 		var component_string : String = COMPONENT_KEYS[component]
 		return "_%s_%s" % [mirrored_string, component_string]
+
+
+func _ready() -> void:
+	if Engine.is_editor_hint() or self.get_child_count() > 0: return
+	refresh()
 
 
 func populate(__template: MaterializedSpriteTemplate, __mirrored: bool, __component: TextureComponent) -> void:
@@ -38,13 +40,8 @@ func populate(__template: MaterializedSpriteTemplate, __mirrored: bool, __compon
 
 
 func refresh() -> void:
-	for child in self.get_children():
-		child.queue_free()
-	sprite_nodes.clear()
-
-	if template == null: return
-
-	position = template.position
+	# position = template.position
+	transform = template.transform
 	create_sprites_from_node(template)
 
 
@@ -54,12 +51,12 @@ func get_animated_sprite_current_texture(sprite: AnimatedSprite2D) -> Texture2D:
 
 func create_sprites_from_node(node: Node2D) -> void:
 	for child in node.get_children():
+		if child is not Node2D: continue
 		if child is AnimatedSprite2D:
 			create_sprite_from_animated_sprite_2d(child)
 		elif child is Sprite2D:
 			create_sprite_from_sprite_2d(child)
-		elif child is Node2D:
-			create_sprites_from_node(child)
+		create_sprites_from_node(child)
 
 
 func create_sprite_from_sprite_2d(sprite: Sprite2D) -> Sprite2D:
@@ -81,9 +78,7 @@ func create_mesh(node: Node2D, texture: Texture2D) -> Sprite2D:
 	result.centered = node.centered
 	result.name = node.name
 	set_texture(result, texture)
-
-	self.sprite_nodes[result] = node
-	self.add_child(result, false, INTERNAL_MODE_DISABLED)
+	self.add_child(result, false, InternalMode.INTERNAL_MODE_DISABLED)
 
 	return result
 
@@ -91,11 +86,3 @@ func create_mesh(node: Node2D, texture: Texture2D) -> Sprite2D:
 func set_texture(node: Node2D, texture: Texture2D) -> void:
 	node.texture = texture
 	node.visible = node.texture != null
-
-
-func refresh_sprite2d(node: Sprite2D) -> void:
-	set_texture(node, sprite_nodes[node].texture)
-
-
-func refresh_animated_sprite2d(node: Sprite2D) -> void:
-	set_texture(node, get_animated_sprite_current_texture(sprite_nodes[node]))
