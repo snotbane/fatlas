@@ -1,6 +1,8 @@
 # Abstract base class for a node that uses [MaterializedSpriteComponent]s.
 @tool class_name MaterializedSprite3D extends VisualInstance3D
 
+const SHADER : Shader = preload("res://addons/fatlas/assets/shaders/materialized_sprite3d.tres")
+
 var _template : MaterializedSpriteTemplate
 ## Reference to the sprite component template.
 @export var template : MaterializedSpriteTemplate :
@@ -64,7 +66,7 @@ func refresh_material() -> void:
 	if not material:
 		self.material = ShaderMaterial.new()
 		self.material.resource_local_to_scene = true
-		self.material.shader = preload("res://addons/penny_godot/assets/shaders/sprite_3d.tres")
+		self.material.shader = SHADER
 
 
 func refresh_viewports() -> void:
