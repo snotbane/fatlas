@@ -7,19 +7,20 @@ func _enable_plugin() -> void:
 	preview_generator = PREVIEW_GENERATOR_SCRIPT.new()
 	# print(preview_generator)
 	EditorInterface.get_resource_previewer().add_preview_generator(preview_generator)
-	EditorInterface.get_resource_filesystem().resources_reimported.connect(_on_resources_reimported)
+	EditorInterface.get_resource_filesystem().resources_reimported.connect(_resources_reimported)
 
 
 func _disable_plugin() -> void:
 	EditorInterface.get_resource_previewer().remove_preview_generator(preview_generator)
-	EditorInterface.get_resource_filesystem().resources_reimported.disconnect(_on_resources_reimported)
+	EditorInterface.get_resource_filesystem().resources_reimported.disconnect(_resources_reimported)
 
 
-func _on_resources_reimported(resources: PackedStringArray) -> void:
+func _resources_reimported(resources: PackedStringArray) -> void:
 	for path in resources:
 		if path.ends_with(".fat"):
-			_on_fatlas_resource_reimported(path)
+			_fatlas_resource_reimported(path)
 
-func _on_fatlas_resource_reimported(path: String) -> void:
+
+func _fatlas_resource_reimported(path: String) -> void:
 	ResourceLoader.load(path, "", ResourceLoader.CacheMode.CACHE_MODE_IGNORE)
 
