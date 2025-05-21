@@ -17,10 +17,12 @@ func _get_resource_type(path: String) -> String:
 func _load(path: String, original_path: String, use_sub_threads: bool, cache_mode: int) -> Variant:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file:
-		# print("path: %s, original: %s" % [path, original_path])
 		var result := Fatlas.new()
 		result.json_path = path
-		result.refresh_resources()
+
+		if Engine.is_editor_hint():
+			result.refresh_resources()
+
 		return result
 	else:
 		printerr("Failed to load resource at path: ", path)

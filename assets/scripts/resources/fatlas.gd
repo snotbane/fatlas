@@ -87,12 +87,8 @@ func refresh_resources() -> void:
 		# EditorInterface.get_resource_previewer().queue_resource_preview(composite_path, composite, "bar", null)
 
 	var dir := DirAccess.open(atlas_folder)
-	for path in existing_atlases:
-		if path not in fresh_paths:
-			dir.remove(path)
+	for path in existing_atlases: if path not in fresh_paths:
+		dir.remove(path)
 	dir = DirAccess.open(compo_folder)
-	for path in existing_compos:
-		if path not in fresh_paths:
-			dir.remove(path)
-
-	EditorInterface.get_resource_filesystem().scan()
+	for path in existing_compos: if path not in fresh_paths:
+		dir.remove(path)
