@@ -10,6 +10,10 @@ func _ready() -> void:
 	self.texture_changed.connect(_texture_changed)
 
 
+func _template_visiblity_changed() -> void:
+	self.visible = template.visible
+
+
 func _texture_changed() -> void:
 	self.z_index = template.z_index
 	if self.texture is OffsetAtlasTexture:
@@ -21,6 +25,8 @@ func _texture_changed() -> void:
 func populate(__component: MaterializedSpriteComponent, __template: Node2D) -> void:
 	component = __component
 	template = __template
+
+	template.visibility_changed.connect(_template_visiblity_changed)
 	if template is Sprite2D:
 		template.texture_changed.connect(refresh_sprite2d_from_texture)
 		refresh_sprite2d_from_texture.call_deferred()

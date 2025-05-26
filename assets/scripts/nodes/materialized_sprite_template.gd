@@ -16,6 +16,7 @@ var _preview_mirror : bool
 		if preview == null: return
 		preview.mirrored = _preview_mirror
 		preview.refresh()
+		_refresh_preview_visibility_here()
 
 
 var _preview_component : MaterializedSpriteComponent.TextureComponent
@@ -27,6 +28,9 @@ var _preview_component : MaterializedSpriteComponent.TextureComponent
 		if preview == null: return
 		preview.component = _preview_component
 		preview.refresh()
+		_refresh_preview_visibility_here()
+func _refresh_preview_visibility_here() -> void:
+	preview.visible = preview.mirrored or  preview.component != MaterializedSpriteComponent.TextureComponent.ALBEDO
 
 
 func _ready() -> void:
@@ -40,3 +44,5 @@ func _ready() -> void:
 	else:
 		self.add_sibling.call_deferred(preview, false)
 		preview.populate(self, false, MaterializedSpriteComponent.TextureComponent.ALBEDO)
+
+	_refresh_preview_visibility_here()

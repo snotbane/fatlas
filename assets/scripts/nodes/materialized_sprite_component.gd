@@ -1,3 +1,4 @@
+
 ## A single component copied from a [MaterializedSpriteTemplate]. Contains many [MaterializedSpriteElement]s (layers).
 @tool class_name MaterializedSpriteComponent extends Node2D
 
@@ -40,7 +41,8 @@ func populate(__template: MaterializedSpriteTemplate, __mirrored: bool, __compon
 
 
 func refresh() -> void:
-	# position = template.position
+	for child in get_children():
+		child.queue_free()
 	transform = template.transform
 	create_sprites_from_node(template)
 
