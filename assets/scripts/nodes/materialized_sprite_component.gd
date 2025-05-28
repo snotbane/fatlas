@@ -4,6 +4,9 @@
 
 const COMPONENT_KEYS = ["a", "e", "m", "n"]
 
+const ROUGHMAT_MIX_MATERIAL := preload("uid://c70gd0pu5iw8p")
+const ROUGHMAT_ADD_MATERIAL := preload("uid://rjp5m128v3st")
+
 enum TextureComponent {
 	ALBEDO,
 	EMISSIVE,
@@ -63,11 +66,21 @@ func create_sprites_from_node(node: Node2D) -> void:
 
 func create_sprite_from_sprite_2d(sprite: Sprite2D) -> Sprite2D:
 	var result := create_mesh(sprite, sprite.texture)
+	self.add_child(result, false, InternalMode.INTERNAL_MODE_DISABLED)
 	return result
 
 
 func create_sprite_from_animated_sprite_2d(sprite: AnimatedSprite2D) -> Sprite2D:
 	var result := create_mesh(sprite, get_animated_sprite_current_texture(sprite))
+	self.add_child(result, false, InternalMode.INTERNAL_MODE_DISABLED)
+
+	if component == TextureComponent.ROUGHMAT:
+		var subsprite := create_mesh(sprite, get_animated_sprite_current_texture(sprite))
+		result.add_child(subsprite, false, INTERNAL_MODE_DISABLED)
+
+		result.material = ROUGHMAT_MIX_MATERIAL
+		subsprite.material = ROUGHMAT_ADD_MATERIAL
+
 	return result
 
 
@@ -80,7 +93,6 @@ func create_mesh(node: Node2D, texture: Texture2D) -> Sprite2D:
 	result.centered = node.centered
 	result.name = node.name
 	set_texture(result, texture)
-	self.add_child(result, false, InternalMode.INTERNAL_MODE_DISABLED)
 
 	return result
 

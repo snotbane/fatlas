@@ -1,4 +1,4 @@
-[gd_resource type="VisualShader" load_steps=60 format=3 uid="uid://de7w4cmvbj0gb"]
+[gd_resource type="VisualShader" load_steps=61 format=3 uid="uid://de7w4cmvbj0gb"]
 
 [sub_resource type="VisualShaderNodeTexture2DParameter" id="VisualShaderNodeTexture2DParameter_bysli"]
 parameter_name = "r_m"
@@ -12,6 +12,9 @@ default_value = 1.0
 
 [sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_74ric"]
 operator = 2
+
+[sub_resource type="VisualShaderNodeFloatFunc" id="VisualShaderNodeFloatFunc_rybjc"]
+function = 31
 
 [sub_resource type="VisualShaderNodeTexture2DParameter" id="VisualShaderNodeTexture2DParameter_ibhxy"]
 parameter_name = "l_a"
@@ -437,6 +440,10 @@ void fragment() {
 	vec3 n_out81p0 = n_out79p0 * vec3(n_out80p3);
 
 
+// FloatFunc:102
+	float n_out102p0 = 1.0 - n_out57p2;
+
+
 // FloatParameter:53
 	float n_out53p0 = occlusion_power;
 
@@ -446,7 +453,7 @@ void fragment() {
 
 
 // FloatOp:52
-	float n_out52p0 = pow(n_out57p2, n_out91p0);
+	float n_out52p0 = pow(n_out102p0, n_out91p0);
 
 
 // FloatParameter:43
@@ -504,7 +511,7 @@ void fragment() {
 
 }
 "
-graph_offset = Vector2(333.585, 77.6726)
+graph_offset = Vector2(-377.127, 283.049)
 modes/cull = 2
 modes/diffuse = 1
 modes/specular = 1
@@ -628,4 +635,6 @@ nodes/fragment/100/node = SubResource("VisualShaderNodeFloatParameter_b5mds")
 nodes/fragment/100/position = Vector2(880, -980)
 nodes/fragment/101/node = SubResource("VisualShaderNodeFloatOp_74ric")
 nodes/fragment/101/position = Vector2(1540, 540)
-nodes/fragment/connections = PackedInt32Array(2, 0, 3, 2, 5, 0, 6, 2, 10, 0, 9, 2, 14, 0, 19, 2, 23, 0, 24, 2, 19, 0, 18, 2, 3, 0, 18, 1, 3, 0, 16, 2, 18, 0, 16, 1, 34, 0, 0, 1, 37, 0, 34, 1, 26, 0, 0, 9, 51, 0, 0, 10, 6, 0, 27, 1, 27, 0, 26, 1, 24, 0, 27, 2, 6, 0, 26, 2, 52, 0, 0, 6, 54, 0, 55, 2, 56, 0, 57, 1, 9, 0, 56, 1, 55, 0, 56, 2, 9, 0, 57, 2, 61, 0, 58, 2, 59, 0, 60, 2, 64, 0, 16, 0, 65, 0, 18, 0, 68, 0, 57, 0, 69, 0, 56, 0, 70, 0, 63, 0, 71, 0, 62, 0, 74, 0, 26, 0, 75, 0, 27, 0, 63, 0, 78, 0, 76, 0, 78, 1, 78, 0, 79, 0, 77, 0, 79, 1, 80, 3, 81, 1, 58, 0, 62, 1, 58, 0, 63, 2, 62, 0, 63, 1, 60, 0, 62, 2, 79, 0, 81, 0, 63, 0, 80, 0, 81, 0, 0, 5, 82, 0, 85, 0, 53, 0, 91, 0, 91, 0, 52, 1, 92, 0, 0, 2, 90, 0, 92, 0, 93, 0, 92, 1, 57, 0, 94, 0, 85, 0, 96, 1, 43, 0, 97, 0, 97, 0, 0, 7, 96, 0, 0, 4, 94, 1, 98, 0, 94, 1, 98, 1, 98, 0, 96, 0, 16, 0, 84, 0, 16, 4, 34, 0, 87, 0, 101, 0, 101, 0, 0, 3, 100, 0, 101, 1, 57, 1, 87, 0, 57, 2, 52, 0, 57, 3, 90, 0, 84, 0, 0, 0)
+nodes/fragment/102/node = SubResource("VisualShaderNodeFloatFunc_rybjc")
+nodes/fragment/102/position = Vector2(1160, 1220)
+nodes/fragment/connections = PackedInt32Array(2, 0, 3, 2, 5, 0, 6, 2, 10, 0, 9, 2, 14, 0, 19, 2, 23, 0, 24, 2, 19, 0, 18, 2, 3, 0, 18, 1, 3, 0, 16, 2, 18, 0, 16, 1, 34, 0, 0, 1, 37, 0, 34, 1, 26, 0, 0, 9, 51, 0, 0, 10, 6, 0, 27, 1, 27, 0, 26, 1, 24, 0, 27, 2, 6, 0, 26, 2, 52, 0, 0, 6, 54, 0, 55, 2, 56, 0, 57, 1, 9, 0, 56, 1, 55, 0, 56, 2, 9, 0, 57, 2, 61, 0, 58, 2, 59, 0, 60, 2, 64, 0, 16, 0, 65, 0, 18, 0, 68, 0, 57, 0, 69, 0, 56, 0, 70, 0, 63, 0, 71, 0, 62, 0, 74, 0, 26, 0, 75, 0, 27, 0, 63, 0, 78, 0, 76, 0, 78, 1, 78, 0, 79, 0, 77, 0, 79, 1, 80, 3, 81, 1, 58, 0, 62, 1, 58, 0, 63, 2, 62, 0, 63, 1, 60, 0, 62, 2, 79, 0, 81, 0, 63, 0, 80, 0, 81, 0, 0, 5, 82, 0, 85, 0, 53, 0, 91, 0, 91, 0, 52, 1, 92, 0, 0, 2, 90, 0, 92, 0, 93, 0, 92, 1, 57, 0, 94, 0, 85, 0, 96, 1, 43, 0, 97, 0, 97, 0, 0, 7, 96, 0, 0, 4, 94, 1, 98, 0, 94, 1, 98, 1, 98, 0, 96, 0, 16, 0, 84, 0, 16, 4, 34, 0, 87, 0, 101, 0, 101, 0, 0, 3, 100, 0, 101, 1, 57, 1, 87, 0, 57, 3, 90, 0, 84, 0, 0, 0, 57, 2, 102, 0, 102, 0, 52, 0)
