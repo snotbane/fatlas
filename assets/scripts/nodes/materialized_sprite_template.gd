@@ -30,7 +30,7 @@ var _preview_component : MaterializedSpriteComponent.TextureComponent
 		preview.refresh()
 		_refresh_preview_visibility_here()
 func _refresh_preview_visibility_here() -> void:
-	# preview.visible = Engine.is_editor_hint()
+	# preview.visible = preview.mirrored or preview.component != MaterializedSpriteComponent.TextureComponent.ALBEDO
 	preview.visible = not Engine.is_editor_hint() or preview.mirrored or preview.component != MaterializedSpriteComponent.TextureComponent.ALBEDO
 
 
