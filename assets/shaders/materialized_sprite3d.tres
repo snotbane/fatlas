@@ -511,7 +511,7 @@ void fragment() {
 
 }
 "
-graph_offset = Vector2(199.403, 225.842)
+graph_offset = Vector2(882.923, 90.1623)
 modes/cull = 2
 modes/diffuse = 1
 modes/specular = 1
