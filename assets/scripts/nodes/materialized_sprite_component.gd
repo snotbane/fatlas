@@ -23,7 +23,7 @@ var texture_key : StringName :
 	get:
 		var mirrored_string : String = "l" if mirrored else "r"
 		var component_string : String = COMPONENT_KEYS[component]
-		return "_%s_%s" % [mirrored_string, component_string]
+		return "-%s-%s" % [mirrored_string, component_string]
 
 
 func _ready() -> void:

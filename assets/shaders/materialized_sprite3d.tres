@@ -2,6 +2,7 @@
 
 [sub_resource type="VisualShaderNodeTexture2DParameter" id="VisualShaderNodeTexture2DParameter_bysli"]
 parameter_name = "r_m"
+color_default = 2
 texture_repeat = 2
 
 [sub_resource type="VisualShaderNodeFloatParameter" id="VisualShaderNodeFloatParameter_b5mds"]
@@ -101,6 +102,7 @@ default_value = 4.0
 
 [sub_resource type="VisualShaderNodeTexture2DParameter" id="VisualShaderNodeTexture2DParameter_tra1w"]
 parameter_name = "l_m"
+color_default = 2
 texture_repeat = 2
 
 [sub_resource type="VisualShaderNodeTexture" id="VisualShaderNodeTexture_vjxf3"]
@@ -244,8 +246,8 @@ uniform bool unique_backface = false;
 uniform sampler2D r_a : source_color, repeat_disable;
 uniform sampler2D l_a : source_color, repeat_disable;
 instance uniform float opacity : hint_range(0.0, 1.0) = 1.0;
-uniform sampler2D r_m : repeat_disable;
-uniform sampler2D l_m : repeat_disable;
+uniform sampler2D r_m : hint_default_transparent, repeat_disable;
+uniform sampler2D l_m : hint_default_transparent, repeat_disable;
 uniform float metallic : hint_range(0.0, 1.0) = 0.5;
 uniform float roughness : hint_range(0.0, 1.0) = 1.0;
 uniform float Specular : hint_range(0.0, 1.0) = 1.0;
@@ -511,7 +513,7 @@ void fragment() {
 
 }
 "
-graph_offset = Vector2(882.923, 90.1623)
+graph_offset = Vector2(-700.153, -600.018)
 modes/cull = 2
 modes/diffuse = 1
 modes/specular = 1
@@ -532,7 +534,7 @@ nodes/fragment/10/position = Vector2(-1720, 380)
 nodes/fragment/14/node = SubResource("VisualShaderNodeTexture2DParameter_ibhxy")
 nodes/fragment/14/position = Vector2(-1700, -540)
 nodes/fragment/15/node = SubResource("VisualShaderNodeBooleanParameter_0qrsx")
-nodes/fragment/15/position = Vector2(-3040, -140)
+nodes/fragment/15/position = Vector2(2680, 360)
 nodes/fragment/16/node = SubResource("VisualShaderNodeSwitch_41shv")
 nodes/fragment/16/position = Vector2(-100, -640)
 nodes/fragment/18/node = SubResource("VisualShaderNodeSwitch_0m3fe")
