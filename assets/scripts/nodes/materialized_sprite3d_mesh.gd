@@ -18,3 +18,4 @@ extends MaterializedSprite3D
 func refresh() -> void:
 	super.refresh()
 	self.mesh = self.quad
+
