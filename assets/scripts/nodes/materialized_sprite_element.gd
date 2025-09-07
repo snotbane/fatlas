@@ -31,6 +31,8 @@ func populate(__component: MaterializedSpriteComponent, __template: Node2D) -> v
 		template.texture_changed.connect(refresh_sprite2d_from_texture)
 		refresh_sprite2d_from_texture.call_deferred()
 	elif template is AnimatedSprite2D:
+		if not template.sprite_frames: return
+
 		template.sprite_frames_changed.connect(refresh_animated_sprite2d_from_texture)
 		template.animation_changed.connect(refresh_animated_sprite2d_from_texture)
 		template.frame_changed.connect(refresh_animated_sprite2d_from_texture)

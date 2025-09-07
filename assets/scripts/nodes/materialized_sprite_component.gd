@@ -79,6 +79,8 @@ func create_sprite_from_sprite_2d(sprite: Sprite2D) -> Sprite2D:
 
 
 func create_sprite_from_animated_sprite_2d(sprite: AnimatedSprite2D) -> Sprite2D:
+	if not sprite.sprite_frames: return
+
 	var result := create_mesh(sprite, get_animated_sprite_current_texture(sprite))
 
 	if sprite.get_meta(&"roughmat_overhang", false) and component == TextureComponent.ROUGHMAT:
