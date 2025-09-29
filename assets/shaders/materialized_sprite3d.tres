@@ -240,7 +240,7 @@ operator = 2
 
 [resource]
 code = "shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_disabled, diffuse_lambert_wrap, specular_toon, depth_prepass_alpha;
+render_mode blend_mix, depth_draw_opaque, depth_test_default, cull_disabled, diffuse_lambert_wrap, specular_toon, depth_prepass_alpha;
 
 uniform bool unique_backface = false;
 uniform sampler2D r_a : source_color, repeat_disable;
